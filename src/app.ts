@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { qrCodeRouter } from "./routes/qrCodeRoute";
+import { paymentWebhookRouter } from "./routes/payment-webhook";
 
 const app = express();
 
@@ -32,5 +33,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rotas
 app.use("/api", qrCodeRouter);
+app.use("/api", paymentWebhookRouter);
 
 export default app;
