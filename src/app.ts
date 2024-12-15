@@ -4,7 +4,14 @@ import { qrCodeRouter } from "./routes/qrCodeRoute";
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "*", // Permitir todas as origens
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Rotas
