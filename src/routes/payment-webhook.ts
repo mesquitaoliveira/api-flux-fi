@@ -8,16 +8,12 @@ paymentWebhookRouter.post(
   "/payment-webhook",
   async (req: Request, res: Response): Promise<void> => {
     try {
-      // Obter o token do cabeçalho 'asaas-access-token'
+      // Validação do token
       const accessToken = req.headers["asaas-access-token"] as
         | string
         | undefined;
       const expectedAccessToken = process.env.WEBHOOK_AUTH_TOKEN;
 
-      console.log("Token esperado:", expectedAccessToken);
-      console.log("Token recebido:", accessToken);
-
-      // Validação do token
       if (!accessToken || accessToken !== expectedAccessToken) {
         console.error("Token inválido:", accessToken);
         res.status(403).json({ error: "Token inválido" });
@@ -27,30 +23,41 @@ paymentWebhookRouter.post(
       // Processamento do payload do webhook
       const { event, payment } = req.body;
 
-      // Log do evento recebido
-      console.log("Evento recebido:", event);
-      console.log("Dados do pagamento:", payment);
+      // Validação do payload
+      if (!event || !payment) {
+        res.status(400).json({ error: "Payload inválido ou incompleto" });
+        return;
+      }
+
+      // Dados processados do pagamento
+      const paymentStatus = {
+        id: payment.id,
+        value: payment.value,
+        status: payment.status,
+        event: event,
+        message: ""
+      };
 
       // Lógica do evento
       switch (event) {
         case "PAYMENT_RECEIVED":
-          console.log(
-            `Pagamento recebido: ${payment.id}, valor: ${payment.value}`
-          );
+          paymentStatus.message = `Pagamento recebido com sucesso: ${payment.id}, valor: ${payment.value}`;
+          console.log(paymentStatus.message);
           break;
 
         case "PAYMENT_CONFIRMED":
-          console.log(
-            `Pagamento confirmado: ${payment.id}, valor: ${payment.value}`
-          );
+          paymentStatus.message = `Pagamento confirmado: ${payment.id}, valor: ${payment.value}`;
+          console.log(paymentStatus.message);
           break;
 
         default:
-          console.warn(`Evento desconhecido: ${event}`);
+          paymentStatus.message = `Evento desconhecido: ${event}`;
+          console.warn(paymentStatus.message);
+          break;
       }
 
-      // Resposta de sucesso para o Asaas
-      res.status(200).json({ message: "Webhook processado com sucesso" });
+      // Retorna o status detalhado do pagamento para o front-end
+      res.status(200).json(paymentStatus);
     } catch (error) {
       console.error("Erro ao processar webhook:", error);
       res.status(500).json({ error: "Erro ao processar webhook" });
