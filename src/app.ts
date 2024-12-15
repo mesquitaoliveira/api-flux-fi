@@ -11,7 +11,11 @@ const corsOptions = {
   credentials: true
 };
 
+// Middleware de CORS
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Habilita suporte para requisições preflight
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
