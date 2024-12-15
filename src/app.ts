@@ -5,10 +5,10 @@ import { qrCodeRouter } from "./routes/qrCodeRoute";
 const app = express();
 
 const corsOptions = {
-  origin: "*", // Permitir todas as origens
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  preflightContinue: false,
-  optionsSuccessStatus: 204
+  origin: "https://flux-fi.vercel.app",
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
+  credentials: true
 };
 
 app.use(cors(corsOptions));
